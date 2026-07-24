@@ -604,11 +604,19 @@ html.gate-locked, html.gate-locked body { overflow: hidden; height: 100%; }
   font-size: 14px;
 }
 
-/* ===== Music toggle ===== */
-.music-toggle {
+/* ===== Music widget ===== */
+.music-widget {
   position: fixed;
   bottom: 22px;
   left: 22px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.music-toggle {
+  flex-shrink: 0;
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -618,14 +626,40 @@ html.gate-locked, html.gate-locked body { overflow: hidden; height: 100%; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 21px;
   cursor: pointer;
-  z-index: 500;
   transition: transform 0.25s ease;
 }
 .music-toggle:hover { transform: scale(1.08); }
-.music-toggle.is-playing .music-icon { animation: spin 3s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.music-toggle.is-playing .music-icon { animation: swing 1.6s ease-in-out infinite; }
+@keyframes swing {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
+}
+
+.music-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.track-btn {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--gold-light);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.track-btn.is-active {
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  color: var(--white);
+  border-color: transparent;
+}
 
 /* ===== Footer ===== */
 .footer {
@@ -650,5 +684,7 @@ html.gate-locked, html.gate-locked body { overflow: hidden; height: 100%; }
   .card { width: 100%; max-width: 300px; }
   section { padding: 70px 18px; }
   .guest-form { padding: 22px; }
-  .music-toggle { width: 46px; height: 46px; font-size: 19px; bottom: 16px; left: 16px; }
+  .music-widget { bottom: 16px; left: 16px; }
+  .music-toggle { width: 46px; height: 46px; font-size: 19px; }
+  .track-btn { font-size: 11px; padding: 6px 10px; }
 }

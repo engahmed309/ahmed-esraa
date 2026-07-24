@@ -124,15 +124,48 @@ for (let i = 0; i < 16; i++) setTimeout(spawnButterfly, i * 250);
 // ===== Background music =====
 const bgAudio = document.getElementById('bgAudio');
 const musicToggle = document.getElementById('musicToggle');
+const musicIcon = document.getElementById('musicIcon');
+const trackBtns = document.querySelectorAll('.track-btn');
+
+function refreshMusicIcon() {
+  const unlocked = !bgAudio.paused && !bgAudio.muted;
+  musicToggle.classList.toggle('is-playing', unlocked);
+  musicIcon.textContent = unlocked ? '🔓' : '🔒';
+}
+
+// Browsers block audible autoplay, but muted autoplay is allowed everywhere.
+// So we start muted right away, then unmute on the very first tap/click/key
+// anywhere on the page — no dedicated button press needed.
+bgAudio.play().catch(() => {});
+
+function unmuteOnFirstInteraction() {
+  bgAudio.muted = false;
+  bgAudio.play().catch(() => {});
+  refreshMusicIcon();
+}
+['click', 'touchstart', 'keydown'].forEach((evt) => {
+  document.addEventListener(evt, unmuteOnFirstInteraction, { once: true });
+});
 
 musicToggle.addEventListener('click', () => {
-  if (bgAudio.paused) {
+  bgAudio.muted = !bgAudio.muted;
+  if (!bgAudio.muted && bgAudio.paused) bgAudio.play().catch(() => {});
+  refreshMusicIcon();
+});
+
+bgAudio.addEventListener('play', refreshMusicIcon);
+bgAudio.addEventListener('pause', refreshMusicIcon);
+refreshMusicIcon();
+
+trackBtns.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    trackBtns.forEach((b) => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    const wasMuted = bgAudio.muted;
+    bgAudio.src = btn.dataset.src;
+    bgAudio.muted = wasMuted;
     bgAudio.play().catch(() => {});
-    musicToggle.classList.add('is-playing');
-  } else {
-    bgAudio.pause();
-    musicToggle.classList.remove('is-playing');
-  }
+  });
 });
 
 // ===== Guestbook =====

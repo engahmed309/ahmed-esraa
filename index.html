@@ -160,10 +160,16 @@
 </main>
 
 <!-- Background music -->
-<audio id="bgAudio" src="assets/song.mp3" loop preload="none"></audio>
-<button type="button" class="music-toggle" id="musicToggle" aria-label="تشغيل الموسيقى">
-  <span class="music-icon">🎵</span>
-</button>
+<audio id="bgAudio" src="assets/song-1.mp3" loop preload="auto" autoplay muted playsinline></audio>
+<div class="music-widget" id="musicWidget">
+  <div class="music-tracks" id="musicTracks">
+    <button type="button" class="track-btn is-active" data-src="assets/song-1.mp3">A Thousand Years</button>
+    <button type="button" class="track-btn" data-src="assets/song-2.mp3">حلوة الأيام</button>
+  </div>
+  <button type="button" class="music-toggle" id="musicToggle" aria-label="قفل / فتح الصوت">
+    <span class="music-icon" id="musicIcon">🔒</span>
+  </button>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="js/config.js"></script>
