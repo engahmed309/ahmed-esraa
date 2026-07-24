@@ -120,3 +120,92 @@ function spawnButterfly() {
 
 setInterval(spawnButterfly, 700);
 for (let i = 0; i < 16; i++) setTimeout(spawnButterfly, i * 250);
+
+// ===== Background music =====
+const bgAudio = document.getElementById('bgAudio');
+const musicToggle = document.getElementById('musicToggle');
+
+musicToggle.addEventListener('click', () => {
+  if (bgAudio.paused) {
+    bgAudio.play().catch(() => {});
+    musicToggle.classList.add('is-playing');
+  } else {
+    bgAudio.pause();
+    musicToggle.classList.remove('is-playing');
+  }
+});
+
+// ===== Guestbook =====
+const sbClient = (typeof supabase !== 'undefined' && SUPABASE_URL !== 'PENDING_SETUP')
+  ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+const guestForm = document.getElementById('guestForm');
+const guestName = document.getElementById('guestName');
+const guestMessage = document.getElementById('guestMessage');
+const guestStatus = document.getElementById('guestStatus');
+const guestSubmitBtn = document.getElementById('guestSubmitBtn');
+const guestList = document.getElementById('guestList');
+
+function renderGuestMessages(rows) {
+  guestList.innerHTML = '';
+  if (!rows || rows.length === 0) {
+    guestList.innerHTML = '<p class="guest-empty">كونوا أول من يسيب لنا كلمة 🤍</p>';
+    return;
+  }
+  rows.forEach((row) => {
+    const card = document.createElement('div');
+    card.className = 'guest-card';
+    const msg = document.createElement('p');
+    msg.className = 'guest-msg';
+    msg.textContent = row.message;
+    const name = document.createElement('p');
+    name.className = 'guest-name';
+    name.textContent = '— ' + row.name;
+    card.appendChild(msg);
+    card.appendChild(name);
+    guestList.appendChild(card);
+  });
+}
+
+async function loadGuestMessages() {
+  if (!sbClient) return;
+  const { data, error } = await sbClient
+    .from('guestbook_messages')
+    .select('name, message, created_at')
+    .eq('approved', true)
+    .order('created_at', { ascending: false });
+  if (!error) renderGuestMessages(data);
+}
+
+if (guestForm) {
+  if (!sbClient) {
+    guestStatus.textContent = 'الخدمة مش متاحة دلوقتي، حاول تاني بعدين.';
+    guestStatus.classList.add('is-error');
+  }
+
+  guestForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!sbClient) return;
+
+    guestSubmitBtn.disabled = true;
+    guestStatus.classList.remove('is-error');
+    guestStatus.textContent = 'جاري الإرسال...';
+
+    const { error } = await sbClient.from('guestbook_messages').insert({
+      name: guestName.value.trim(),
+      message: guestMessage.value.trim(),
+    });
+
+    if (error) {
+      guestStatus.textContent = 'حصل خطأ، حاول تاني.';
+      guestStatus.classList.add('is-error');
+    } else {
+      guestStatus.textContent = 'وصلت كلمتك، هتظهر بعد ما نراجعها. شكرًا ليكم 🤍';
+      guestForm.reset();
+    }
+    guestSubmitBtn.disabled = false;
+  });
+
+  loadGuestMessages();
+}

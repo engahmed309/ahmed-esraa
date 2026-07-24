@@ -138,12 +138,35 @@
     </div>
   </section>
 
+  <!-- Guestbook -->
+  <section class="guestbook" id="guestbook">
+    <h2 class="section-title reveal">سيبولنا كلمة</h2>
+    <p class="guestbook-sub reveal">شرفونا بكلمة حلوة هنفتكرها دايمًا</p>
+
+    <form class="guest-form reveal" id="guestForm">
+      <input type="text" id="guestName" placeholder="اسمك" maxlength="60" required>
+      <textarea id="guestMessage" placeholder="اكتب كلمتك هنا..." maxlength="400" rows="3" required></textarea>
+      <button type="submit" class="guest-submit" id="guestSubmitBtn">إرسال</button>
+      <p class="guest-status" id="guestStatus"></p>
+    </form>
+
+    <div class="guest-list" id="guestList"></div>
+  </section>
+
   <footer class="footer">
     <p>بكل الحب، ننتظر حضوركم 🤍</p>
   </footer>
 
 </main>
 
+<!-- Background music -->
+<audio id="bgAudio" src="assets/song.mp3" loop preload="none"></audio>
+<button type="button" class="music-toggle" id="musicToggle" aria-label="تشغيل الموسيقى">
+  <span class="music-icon">🎵</span>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
 <script src="js/script.js"></script>
 </body>
 </html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مراجعة الرسائل | أحمد و إسراء</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f8f6ec;
+    --olive-pale: #ecead4;
+    --gold: #b6893f;
+    --gold-deep: #9c7530;
+    --ink: #4a3b32;
+    --ink-soft: #7a6a5e;
+    --white: #ffffff;
+    --danger: #b34a3a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Cairo', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    padding: 30px 16px 80px;
+  }
+  h1 {
+    text-align: center;
+    color: var(--gold-deep);
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+  .sub {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+  .login-box {
+    max-width: 360px;
+    margin: 60px auto;
+    background: var(--white);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(74,59,50,0.1);
+    text-align: center;
+  }
+  .login-box input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #e5e0d0;
+    border-radius: 10px;
+    font-size: 15px;
+    margin-bottom: 14px;
+    font-family: inherit;
+    text-align: center;
+  }
+  .login-box button, .action-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .login-box button {
+    width: 100%;
+    background: linear-gradient(135deg, #d8b876, var(--gold));
+    color: white;
+  }
+  .error { color: var(--danger); font-size: 13px; margin-top: 10px; min-height: 16px; }
+
+  #panel { display: none; max-width: 700px; margin: 0 auto; }
+  .section-label {
+    font-weight: 700;
+    color: var(--gold-deep);
+    margin: 30px 0 12px;
+    font-size: 17px;
+  }
+  .msg-card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 6px 20px rgba(74,59,50,0.06);
+  }
+  .msg-card.pending { background: var(--olive-pale); }
+  .msg-text { margin: 0 0 8px; line-height: 1.8; }
+  .msg-meta { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .msg-name { font-weight: 700; color: var(--gold-deep); font-size: 14px; }
+  .msg-date { font-size: 12px; color: var(--ink-soft); }
+  .msg-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .approve-btn { background: var(--gold); color: white; }
+  .delete-btn { background: #fff; color: var(--danger); border: 1px solid var(--danger) !important; }
+  .empty-note { color: var(--ink-soft); font-size: 14px; text-align: center; padding: 20px; }
+  .refresh-btn {
+    display: block;
+    margin: 20px auto 0;
+    background: var(--white);
+    border: 1px solid #e5e0d0 !important;
+    color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<h1>مراجعة كلمات الضيوف</h1>
+<p class="sub">أحمد &amp; إسراء</p>
+
+<div class="login-box" id="loginBox">
+  <input type="password" id="passcodeInput" placeholder="كلمة السر">
+  <button type="button" id="loginBtn">دخول</button>
+  <p class="error" id="loginError"></p>
+</div>
+
+<div id="panel">
+  <div class="section-label">قيد المراجعة</div>
+  <div id="pendingList"></div>
+
+  <div class="section-label">معتمدة (ظاهرة للناس)</div>
+  <div id="approvedList"></div>
+
+  <button type="button" class="action-btn refresh-btn" id="refreshBtn">تحديث القائمة</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script>
+const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let passcode = '';
+
+const loginBox = document.getElementById('loginBox');
+const panel = document.getElementById('panel');
+const loginError = document.getElementById('loginError');
+const pendingList = document.getElementById('pendingList');
+const approvedList = document.getElementById('approvedList');
+
+document.getElementById('loginBtn').addEventListener('click', login);
+document.getElementById('passcodeInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') login();
+});
+document.getElementById('refreshBtn').addEventListener('click', () => loadMessages());
+
+async function login() {
+  const value = document.getElementById('passcodeInput').value.trim();
+  if (!value) return;
+  passcode = value;
+  loginError.textContent = '';
+  const ok = await loadMessages();
+  if (ok) {
+    loginBox.style.display = 'none';
+    panel.style.display = 'block';
+    sessionStorage.setItem('wedding_admin_pass', passcode);
+  } else {
+    loginError.textContent = 'كلمة السر غلط';
+  }
+}
+
+async function loadMessages() {
+  const { data, error } = await sbClient.rpc('admin_list_messages', { p_passcode: passcode });
+  if (error) return false;
+
+  const pending = data.filter((m) => !m.approved);
+  const approved = data.filter((m) => m.approved);
+
+  pendingList.innerHTML = pending.length
+    ? pending.map(renderCard).join('')
+    : '<p class="empty-note">مفيش رسائل جديدة</p>';
+
+  approvedList.innerHTML = approved.length
+    ? approved.map(renderCard).join('')
+    : '<p class="empty-note">لسه مفيش رسائل معتمدة</p>';
+
+  document.querySelectorAll('[data-approve]').forEach((btn) => {
+    btn.addEventListener('click', () => approveMessage(btn.dataset.approve));
+  });
+  document.querySelectorAll('[data-delete]').forEach((btn) => {
+    btn.addEventListener('click', () => deleteMessage(btn.dataset.delete));
+  });
+
+  return true;
+}
+
+function renderCard(m) {
+  const date = new Date(m.created_at).toLocaleString('ar-EG', { dateStyle: 'medium', timeStyle: 'short' });
+  const approveBtn = m.approved ? '' : `<button type="button" class="action-btn approve-btn" data-approve="${m.id}">قبول</button>`;
+  return `
+    <div class="msg-card ${m.approved ? '' : 'pending'}">
+      <p class="msg-text">${escapeHtml(m.message)}</p>
+      <div class="msg-meta">
+        <span class="msg-name">${escapeHtml(m.name)}</span>
+        <span class="msg-date">${date}</span>
+      </div>
+      <div class="msg-actions">
+        ${approveBtn}
+        <button type="button" class="action-btn delete-btn" data-delete="${m.id}">حذف</button>
+      </div>
+    </div>`;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+async function approveMessage(id) {
+  await sbClient.rpc('admin_approve_message', { p_id: id, p_passcode: passcode });
+  loadMessages();
+}
+
+async function deleteMessage(id) {
+  if (!confirm('متأكد إنك عايز تحذف الرسالة دي؟')) return;
+  await sbClient.rpc('admin_delete_message', { p_id: id, p_passcode: passcode });
+  loadMessages();
+}
+
+// Auto-login if passcode already verified this session
+const savedPass = sessionStorage.getItem('wedding_admin_pass');
+if (savedPass) {
+  document.getElementById('passcodeInput').value = savedPass;
+  login();
+}
+</script>
+</body>
+</html>
