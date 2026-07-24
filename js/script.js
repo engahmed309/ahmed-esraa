@@ -89,7 +89,7 @@ for (let i = 0; i < 5; i++) setTimeout(spawnPetal, i * 400);
 // ===== Flying butterflies =====
 const butterflyContainer = document.getElementById('butterflies');
 const butterflyPaths = ['path-a', 'path-b', 'path-c'];
-const MAX_BUTTERFLIES = 16;
+const MAX_BUTTERFLIES = 28;
 let butterflyCount = 0;
 
 function spawnButterfly() {
@@ -99,10 +99,10 @@ function spawnButterfly() {
   const butterfly = document.createElement('span');
   const path = butterflyPaths[Math.floor(Math.random() * butterflyPaths.length)];
   butterfly.className = 'butterfly ' + path;
-  butterfly.style.top = Math.random() * 85 + 'vh';
-  butterfly.style.fontSize = 18 + Math.random() * 18 + 'px';
+  butterfly.style.top = 22 + Math.random() * 45 + 'vh';
+  butterfly.style.fontSize = 24 + Math.random() * 20 + 'px';
 
-  const duration = 11 + Math.random() * 9;
+  const duration = 20 + Math.random() * 14;
   butterfly.style.animationDuration = duration + 's';
 
   const wing = document.createElement('span');
@@ -118,5 +118,5 @@ function spawnButterfly() {
   }, duration * 1000);
 }
 
-setInterval(spawnButterfly, 1100);
-for (let i = 0; i < 8; i++) setTimeout(spawnButterfly, i * 350);
+setInterval(spawnButterfly, 700);
+for (let i = 0; i < 16; i++) setTimeout(spawnButterfly, i * 250);

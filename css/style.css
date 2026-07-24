@@ -203,30 +203,30 @@ html.gate-locked, html.gate-locked body { overflow: hidden; height: 100%; }
 
 @keyframes flyA {
   0%   { transform: translate(-10vw, 0) rotate(-6deg); opacity: 0; }
-  8%   { opacity: 0.95; }
-  25%  { transform: translate(28vw, -14vh) rotate(8deg); }
-  50%  { transform: translate(52vw, 6vh) rotate(-8deg); }
-  75%  { transform: translate(78vw, -12vh) rotate(6deg); }
-  92%  { opacity: 0.9; }
-  100% { transform: translate(112vw, 4vh) rotate(-4deg); opacity: 0; }
+  8%   { opacity: 1; }
+  25%  { transform: translate(28vw, -9vh) rotate(8deg); }
+  50%  { transform: translate(52vw, 4vh) rotate(-8deg); }
+  75%  { transform: translate(78vw, -8vh) rotate(6deg); }
+  92%  { opacity: 1; }
+  100% { transform: translate(112vw, 3vh) rotate(-4deg); opacity: 0; }
 }
 @keyframes flyB {
   0%   { transform: translate(110vw, 0) rotate(6deg) scaleX(-1); opacity: 0; }
-  8%   { opacity: 0.95; }
-  25%  { transform: translate(72vw, 10vh) rotate(-8deg) scaleX(-1); }
-  50%  { transform: translate(48vw, -8vh) rotate(8deg) scaleX(-1); }
-  75%  { transform: translate(22vw, 8vh) rotate(-6deg) scaleX(-1); }
-  92%  { opacity: 0.9; }
-  100% { transform: translate(-12vw, -4vh) rotate(4deg) scaleX(-1); opacity: 0; }
+  8%   { opacity: 1; }
+  25%  { transform: translate(72vw, 7vh) rotate(-8deg) scaleX(-1); }
+  50%  { transform: translate(48vw, -6vh) rotate(8deg) scaleX(-1); }
+  75%  { transform: translate(22vw, 6vh) rotate(-6deg) scaleX(-1); }
+  92%  { opacity: 1; }
+  100% { transform: translate(-12vw, -3vh) rotate(4deg) scaleX(-1); opacity: 0; }
 }
 @keyframes flyC {
-  0%   { transform: translate(0, 12vh) rotate(-10deg); opacity: 0; }
-  10%  { opacity: 0.95; }
-  30%  { transform: translate(18vw, -10vh) rotate(10deg); }
-  55%  { transform: translate(38vw, 8vh) rotate(-10deg); }
-  80%  { transform: translate(60vw, -14vh) rotate(10deg); }
-  92%  { opacity: 0.85; }
-  100% { transform: translate(80vw, -30vh) rotate(-6deg); opacity: 0; }
+  0%   { transform: translate(-6vw, 8vh) rotate(-10deg); opacity: 0; }
+  10%  { opacity: 1; }
+  30%  { transform: translate(20vw, -7vh) rotate(10deg); }
+  55%  { transform: translate(45vw, 6vh) rotate(-10deg); }
+  80%  { transform: translate(70vw, -8vh) rotate(10deg); }
+  92%  { opacity: 1; }
+  100% { transform: translate(100vw, 5vh) rotate(-6deg); opacity: 0; }
 }
 
 /* ===== Reveal animation ===== */
